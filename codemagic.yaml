@@ -1,0 +1,29 @@
+image: android
+
+workflows:
+  build_android:
+    name: Tests + APKs
+    max_build_duration: 45
+    environment:
+      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx3g -Dfile.encoding=UTF-8
+    scripts:
+      - name: Check toolchain
+        script: |
+          java -version
+          ./gradlew --version
+      - name: Run unit tests
+        script: |
+          ./gradlew --no-daemon testDebugUnitTest
+      - name: Build debug APK
+        script: |
+          ./gradlew --no-daemon assembleDebug
+      - name: Build release APK
+        script: |
+          ./gradlew --no-daemon assembleRelease
+    artifacts:
+      - path: app/build/outputs/apk/debug/*.apk
+        type: file
+      - path: app/build/outputs/apk/release/*.apk
+        type: file
+      - path: app/build/reports/tests/**/*.html
+        type: file
